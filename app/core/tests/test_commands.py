@@ -19,15 +19,15 @@ from django.test import SimpleTestCase
 @patch('core.management.commands.wait_for_db.Command.check')
 class CommandTests(SimpleTestCase):
     """Test commands"""
-    
+
     def test_wait_for_db_ready(self, patched_check):
         """Test waiting for the database if the database is ready"""
-        
+
         #hardcoding the true value
         patched_check.return_value = True
-        
+
         call_command('wait_for_db')
-        
+
         patched_check.assert_called_once_with(databases=['default'])
 
 
@@ -39,13 +39,13 @@ class CommandTests(SimpleTestCase):
       # then second error is when database is ready to accept connections but it hasn't set up the testing database
       patched_check.side_effect = [Psycopg2Error] * 2 + \
         [OperationalError] * 3 + [True]
-        
+
       call_command('wait_for_db')
-      
+
       self.assertEqual(patched_check.call_count, 6)
-      
-      #patched_check.assert_called_once_with(database=['default']) is our way of 
-      # saying, "Hey, magical tool, check if we used our command wand exactly once, 
+
+      #patched_check.assert_called_once_with(database=['default']) is our way of
+      # saying, "Hey, magical tool, check if we used our command wand exactly once,
       # and when we used it, did we say the magic words 'database=['default']'?"
 
       patched_check.assert_called_with(databases=['default'])

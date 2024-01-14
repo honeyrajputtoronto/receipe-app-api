@@ -5,7 +5,7 @@
 # #only one run to avoid creating the image layers to keep our file light weight
 # #create virtual environment to bypass any conflict due to dependencies on the actual base image
 # # "&& \" is used to concatenate multiple command in single line and if any line fail it fails.
-# # we remove tmp directory, to remove the extra folder 
+# # we remove tmp directory, to remove the extra folder
 # # add user to restrict the full access and do not work on root user because if file get compromised then user can get full access
 # #sets the environment variable inside the image and it defines all the data where the executables can be run.
 # # once all the above commands are being run as a root user, now after this every command will be run as a django user with limited access.
@@ -36,7 +36,7 @@
 #     # we are going to need this package inside our alpine image in order for our psycopgy2 package to connect with postgresql
 #     apk add --update --no--cache postgresql--client && \
 #     apk add --update --no--cache --virtual .tmp-build-deps \
-#         build-base postgresql-dev musl-dev && \ 
+#         build-base postgresql-dev musl-dev && \
 #     /py/bin/pip install -r /tmp/requirements.txt && \
 #     if [ "$DEV" = "True" ]; then \
 #         /py/bin/pip install -r /tmp/requirements.dev.txt && \
@@ -45,7 +45,7 @@
 
 # # Clean up temporary files
 # RUN rm -rf /tmp && \
-#     apk del .tmp-build-deps && 
+#     apk del .tmp-build-deps &&
 
 # # Create non-root user
 # RUN adduser \
