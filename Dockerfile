@@ -79,9 +79,9 @@ RUN python -m venv /py
 RUN /py/bin/pip install --upgrade pip && \
     # installing the postgresql client.
     # we are going to need this package inside our alpine image in order for our psycopgy2 package to connect with postgresql
-    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache postgresql-client jpeg-dev && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
+        build-base postgresql-dev musl-dev zlib zlib-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ "$DEV" = "True" ]; then \
         /py/bin/pip install -r /tmp/requirements.dev.txt && \
@@ -96,7 +96,11 @@ RUN rm -rf /tmp && \
 RUN adduser \
     --disabled-password \
     --no-create-home \
-    django-user
+    django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 # Set PATH for the virtual environment
 ENV PATH="/py/bin:$PATH"
