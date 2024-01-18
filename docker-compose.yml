@@ -1,23 +1,16 @@
-# Version of the Docker Compose syntax
 version: "3.9"
 
-# This is just the service that is going to run our Dockerfile
 services:
   app:
-    # This will build the Dockerfile into the current directory
     build:
       context: .
-      # This will add our requirements.dev.txt file to allow the dependencies of development
       args:
-        DEV: "True"
-    # This maps port 8000 on our local machine to 8000 on our Docker container
+        - DEV=true
     ports:
       - "8000:8000"
-    # Map directories from our system to our Docker container
     volumes:
       - ./app:/app
       - dev-static-data:/vol/web
-    # This will help to run the server
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
@@ -27,19 +20,19 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
-      - DEBUG = 1
+      - DEBUG=1
     depends_on:
       - db
 
   db:
     image: postgres:13-alpine
     volumes:
-      - dev_db_data:/var/lib/postgresql/data
+      - dev-db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
 
 volumes:
-  dev_db_data:
+  dev-db-data:
   dev-static-data:
