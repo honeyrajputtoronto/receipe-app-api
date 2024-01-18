@@ -66,6 +66,10 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
+
+#creating a directory in our project called scripts
+# heps us to create helper scripts that are run by our docker application
+COPY ./scripts /scripts
 COPY ./app /app
 WORKDIR /app
 EXPOSE 8000
@@ -81,7 +85,8 @@ RUN /py/bin/pip install --upgrade pip && \
     # we are going to need this package inside our alpine image in order for our psycopgy2 package to connect with postgresql
     apk add --update --no-cache postgresql-client jpeg-dev && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev zlib zlib-dev && \
+    # linux headers because - requirement for uWSGI server installation
+        build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ "$DEV" = "True" ]; then \
         /py/bin/pip install -r /tmp/requirements.dev.txt && \
@@ -100,10 +105,15 @@ RUN adduser \
     mkdir -p /vol/web/media && \
     mkdir -p /vol/web/static && \
     chown -R django-user:django-user /vol && \
-    chmod -R 755 /vol
+    chmod -R 755 /vol && \
+    chmod -R +x /scripts
 
 # Set PATH for the virtual environment
-ENV PATH="/py/bin:$PATH"
+# ENV PATH="/py/bin:$PATH"
+ENV PATH="/scripts:/py/bin:$PATH"
+
 
 # Switch to the non-root user
 USER django-user
+
+CMD ["run.sh"]
